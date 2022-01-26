@@ -3,11 +3,14 @@ import { ChakraProvider } from '@chakra-ui/react'
 
 // css global da aplicação
 import { theme } from '../styles/theme';
+import { SidebarDrawerProvider } from '../contexts/SidebarDrawerContext';
 
 function MyApp({ Component, pageProps } : AppProps) {
   return ( 
     <ChakraProvider resetCSS theme={theme}> 
-      <Component {...pageProps} />
+      <SidebarDrawerProvider>
+        <Component {...pageProps} />
+      </SidebarDrawerProvider>
     </ChakraProvider>
   )
 }
