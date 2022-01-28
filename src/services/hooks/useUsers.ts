@@ -9,9 +9,20 @@ type User = {
     createdAt: string;
 }
 
-export async function getUsers(): Promise<User[]>{
+type GetUsersResponse = {
+    totalCount: number;
+    users: User[];
+}
+
+export async function getUsers(page: number): Promise<GetUsersResponse>{
    
-    const { data } = await api.get('users');
+    const { data, headers } = await api.get('users', {
+        params: {
+            page, 
+        }
+    });
+
+    const totalCount = Number(headers['x-total-count'])
         
     const users = data.users.map(user => {
         return {
@@ -22,16 +33,16 @@ export async function getUsers(): Promise<User[]>{
         }
     })
 
-    return users;
+    return { users, totalCount };
 }
 
 //fetching acontece quando troca-se de abas no navegador, navega-se por dentro da aplicação
 //loading acontece ao dar f5 na pagina
-export function useUsers() {
-    return useQuery<User[]>('users', getUsers, {
-        staleTime: 1000 * 5,
+export function useUsers(page: number) {
+    return useQuery(['users', page], () => getUsers(page), {
+        staleTime: 1000 * 60 * 10,
         //staleTime -> em 5 segundos não vai haver recarregamento página
-    })
+    });
 }
 
     
